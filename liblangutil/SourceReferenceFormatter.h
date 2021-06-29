@@ -23,6 +23,7 @@
 
 #include <liblangutil/Exceptions.h>
 #include <liblangutil/SourceReferenceExtractor.h>
+#include <liblangutil/ScannerBySourceName.h>
 
 #include <libsolutil/AnsiColorized.h>
 
@@ -37,34 +38,53 @@ struct SourceLocation;
 class SourceReferenceFormatter
 {
 public:
-	SourceReferenceFormatter(std::ostream& _stream, bool _colored, bool _withErrorIds):
-		m_stream(_stream), m_colored(_colored), m_withErrorIds(_withErrorIds)
+	SourceReferenceFormatter(
+		std::ostream& _stream,
+		ScannerBySourceName const& _scanner,
+		bool _colored,
+		bool _withErrorIds
+	):
+		m_stream(_stream), m_scanner(_scanner), m_colored(_colored), m_withErrorIds(_withErrorIds)
 	{}
 
 	/// Prints source location if it is given.
 	void printSourceLocation(SourceReference const& _ref);
 	void printExceptionInformation(SourceReferenceExtractor::Message const& _msg);
 	void printExceptionInformation(util::Exception const& _exception, std::string const& _category);
+	void printErrorInformation(langutil::ErrorList const& _errors);
 	void printErrorInformation(Error const& _error);
 
 	static std::string formatExceptionInformation(
 		util::Exception const& _exception,
 		std::string const& _name,
+		ScannerBySourceName const& _scanner,
 		bool _colored = false,
 		bool _withErrorIds = false
 	)
 	{
 		std::ostringstream errorOutput;
-		SourceReferenceFormatter formatter(errorOutput, _colored, _withErrorIds);
+		SourceReferenceFormatter formatter(errorOutput, _scanner, _colored, _withErrorIds);
 		formatter.printExceptionInformation(_exception, _name);
 		return errorOutput.str();
 	}
 
-	static std::string formatErrorInformation(Error const& _error)
+	static std::string formatErrorInformation(
+		Error const& _error,
+		ScannerBySourceName const& _scanner
+	)
 	{
 		return formatExceptionInformation(
 			_error,
-			(_error.type() == Error::Type::Warning) ? "Warning" : "Error"
+			(_error.type() == Error::Type::Warning) ? "Warning" : "Error",
+			_scanner
+		);
+	}
+
+	static std::string formatErrorInformation(Error const& _error, Scanner const& _scanner)
+	{
+		return formatErrorInformation(
+			_error,
+			ScannerBySourceNameForSingleScanner(_scanner)
 		);
 	}
 
@@ -79,6 +99,7 @@ private:
 
 private:
 	std::ostream& m_stream;
+	ScannerBySourceName const& m_scanner;
 	bool m_colored;
 	bool m_withErrorIds;
 };

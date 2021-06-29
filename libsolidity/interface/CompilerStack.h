@@ -38,6 +38,7 @@
 #include <liblangutil/ErrorReporter.h>
 #include <liblangutil/EVMVersion.h>
 #include <liblangutil/SourceLocation.h>
+#include <liblangutil/ScannerBySourceName.h>
 
 #include <libevmasm/LinkerObject.h>
 
@@ -87,7 +88,7 @@ class DeclarationContainer;
  * If error recovery is active, it is possible to progress through the stages even when
  * there are errors. In any case, producing code is only possible without errors.
  */
-class CompilerStack
+class CompilerStack: public langutil::ScannerBySourceName
 {
 public:
 	/// Noncopyable.
@@ -120,7 +121,7 @@ public:
 	/// and must not emit exceptions.
 	explicit CompilerStack(ReadCallback::Callback _readFile = ReadCallback::Callback());
 
-	~CompilerStack();
+	~CompilerStack() override;
 
 	/// @returns the list of errors that occurred during parsing and type checking.
 	langutil::ErrorList const& errors() const { return m_errorReporter.errors(); }
@@ -240,7 +241,7 @@ public:
 	std::map<std::string, unsigned> sourceIndices() const;
 
 	/// @returns the previously used scanner, useful for counting lines during error reporting.
-	langutil::Scanner const& scanner(std::string const& _sourceName) const;
+	langutil::Scanner const& scanner(std::string const& _sourceName) const override;
 
 	/// @returns the parsed source unit with the supplied name.
 	SourceUnit const& ast(std::string const& _sourceName) const;

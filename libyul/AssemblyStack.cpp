@@ -88,7 +88,7 @@ evmasm::Assembly::OptimiserSettings translateOptimiserSettings(
 }
 
 
-Scanner const& AssemblyStack::scanner() const
+Scanner const& AssemblyStack::scanner(string const&) const
 {
 	yulAssert(m_scanner, "");
 	return *m_scanner;

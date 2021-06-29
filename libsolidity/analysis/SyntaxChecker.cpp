@@ -68,7 +68,9 @@ void SyntaxChecker::endVisit(SourceUnit const& _sourceUnit)
 				string(";\"");
 
 		// when reporting the warning, print the source name only
-		m_errorReporter.warning(3420_error, {-1, -1, _sourceUnit.location().source}, errorString);
+		// TODO check that this still works after the change to the helpers.
+		// maybe we should consider `-1/-1/name` fully valid?
+		m_errorReporter.warning(3420_error, {-1, -1, _sourceUnit.location().sourceName}, errorString);
 	}
 	if (!m_sourceUnit->annotation().useABICoderV2.set())
 		m_sourceUnit->annotation().useABICoderV2 = true;

@@ -28,6 +28,8 @@
 namespace solidity::langutil
 {
 
+class ScannerBySourceName;
+
 struct LineColumn
 {
 	int line = {-1};
@@ -67,9 +69,9 @@ namespace SourceReferenceExtractor
 		std::optional<ErrorId> errorId;
 	};
 
-	Message extract(util::Exception const& _exception, std::string _category);
-	Message extract(Error const& _error);
-	SourceReference extract(SourceLocation const* _location, std::string message = "");
+	Message extract(ScannerBySourceName const& _scanner, util::Exception const& _exception, std::string _category);
+	Message extract(ScannerBySourceName const& _scanner, Error const& _error);
+	SourceReference extract(ScannerBySourceName const& _scanner, SourceLocation const* _location, std::string message = "");
 }
 
 }

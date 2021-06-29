@@ -18,6 +18,8 @@
 #include <liblangutil/SourceReferenceExtractor.h>
 #include <liblangutil/CharStream.h>
 #include <liblangutil/Exceptions.h>
+#include <liblangutil/ScannerBySourceName.h>
+#include <liblangutil/Scanner.h>
 
 #include <algorithm>
 #include <cmath>
@@ -26,46 +28,57 @@ using namespace std;
 using namespace solidity;
 using namespace solidity::langutil;
 
-SourceReferenceExtractor::Message SourceReferenceExtractor::extract(util::Exception const& _exception, string _category)
+SourceReferenceExtractor::Message SourceReferenceExtractor::extract(
+	ScannerBySourceName const& _scanner,
+	util::Exception const& _exception,
+	string _category
+)
 {
 	SourceLocation const* location = boost::get_error_info<errinfo_sourceLocation>(_exception);
 
 	string const* message = boost::get_error_info<util::errinfo_comment>(_exception);
-	SourceReference primary = extract(location, message ? *message : "");
+	SourceReference primary = extract(_scanner, location, message ? *message : "");
 
 	std::vector<SourceReference> secondary;
 	auto secondaryLocation = boost::get_error_info<errinfo_secondarySourceLocation>(_exception);
 	if (secondaryLocation && !secondaryLocation->infos.empty())
 		for (auto const& info: secondaryLocation->infos)
-			secondary.emplace_back(extract(&info.second, info.first));
+			secondary.emplace_back(extract(_scanner, &info.second, info.first));
 
 	return Message{std::move(primary), _category, std::move(secondary), nullopt};
 }
 
-SourceReferenceExtractor::Message SourceReferenceExtractor::extract(Error const& _error)
+SourceReferenceExtractor::Message SourceReferenceExtractor::extract(
+	ScannerBySourceName const& _scanner,
+	Error const& _error
+)
 {
 	string category = (_error.type() == Error::Type::Warning) ? "Warning" : "Error";
-	Message message = extract(_error, category);
+	Message message = extract(_scanner, _error, category);
 	message.errorId = _error.errorId();
 	return message;
 }
 
-SourceReference SourceReferenceExtractor::extract(SourceLocation const* _location, std::string message)
+SourceReference SourceReferenceExtractor::extract(
+	ScannerBySourceName const& _scanner,
+	SourceLocation const* _location,
+	std::string message
+)
 {
-	if (!_location || !_location->source.get()) // Nothing we can extract here
+	if (!_location || !_location->sourceName) // Nothing we can extract here
 		return SourceReference::MessageOnly(std::move(message));
 
 	if (!_location->hasText()) // No source text, so we can only extract the source name
-		return SourceReference::MessageOnly(std::move(message), _location->source->name());
+		return SourceReference::MessageOnly(std::move(message), *_location->sourceName);
 
-	shared_ptr<CharStream> const& source = _location->source;
+	Scanner const& scanner = _scanner.scanner(*_location->sourceName);
 
-	LineColumn const interest = source->translatePositionToLineColumn(_location->start);
+	LineColumn const interest = scanner.translatePositionToLineColumn(_location->start);
 	LineColumn start = interest;
-	LineColumn end = source->translatePositionToLineColumn(_location->end);
+	LineColumn end = scanner.translatePositionToLineColumn(_location->end);
 	bool const isMultiline = start.line != end.line;
 
-	string line = source->lineAtPosition(_location->start);
+	string line = scanner.lineAtPosition(_location->start);
 
 	int locationLength =
 		isMultiline ?
@@ -102,7 +115,7 @@ SourceReference SourceReferenceExtractor::extract(SourceLocation const* _locatio
 
 	return SourceReference{
 		std::move(message),
-		source->name(),
+		*_location->sourceName,
 		interest,
 		isMultiline,
 		line,

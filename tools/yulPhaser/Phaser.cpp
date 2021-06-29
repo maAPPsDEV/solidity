@@ -27,6 +27,8 @@
 #include <tools/yulPhaser/SimulationRNG.h>
 
 #include <liblangutil/CharStream.h>
+#include <liblangutil/SourceReferenceFormatter.h>
+#include <liblangutil/Scanner.h>
 
 #include <libsolutil/Assertions.h>
 #include <libsolutil/CommonData.h>
@@ -389,7 +391,10 @@ vector<Program> ProgramFactory::build(Options const& _options)
 		variant<Program, ErrorList> programOrErrors = Program::load(sourceCode);
 		if (holds_alternative<ErrorList>(programOrErrors))
 		{
-			cerr << get<ErrorList>(programOrErrors) << endl;
+			Scanner scanner(sourceCode);
+			SourceReferenceFormatter{cerr, ScannerBySourceNameForSingleScanner(scanner), true, false}
+				.printErrorInformation(get<ErrorList>(programOrErrors));
+			cerr << endl;
 			assertThrow(false, InvalidProgram, "Failed to load program " + path);
 		}
 

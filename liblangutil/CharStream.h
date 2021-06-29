@@ -69,8 +69,8 @@ class CharStream
 {
 public:
 	CharStream() = default;
-	explicit CharStream(std::string  _source, std::string  name):
-		m_source(std::move(_source)), m_name(std::move(name)) {}
+	explicit CharStream(std::string _source, std::string _name):
+		m_source(std::move(_source)), m_name(std::move(_name)) {}
 
 	size_t position() const { return m_position; }
 	bool isPastEndOfInput(size_t _charsForward = 0) const { return (m_position + _charsForward) >= m_source.size(); }

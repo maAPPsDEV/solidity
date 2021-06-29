@@ -15,36 +15,41 @@
 	along with solidity.  If not, see <http://www.gnu.org/licenses/>.
 */
 // SPDX-License-Identifier: GPL-3.0
+/**
+ * Interface to retrieve the scanner by a source name.
+ */
 
 #pragma once
 
-#include <test/TestCase.h>
+#include <string>
 
-namespace solidity::yul
-{
-struct Object;
-}
-
-namespace solidity::yul::test
+namespace solidity::langutil
 {
 
-class EwasmTranslationTest: public solidity::frontend::test::EVMVersionRestrictedTestCase
+class Scanner;
+
+/**
+ * Interface to retrieve a scanner from a source name.
+ * Used especially for printing error information.
+ */
+class ScannerBySourceName
 {
 public:
-	static std::unique_ptr<TestCase> create(Config const& _config)
+	virtual ~ScannerBySourceName() = default;
+	virtual langutil::Scanner const& scanner(std::string const& _sourceName) const = 0;
+};
+
+class ScannerBySourceNameForSingleScanner: public ScannerBySourceName
+{
+public:
+	ScannerBySourceNameForSingleScanner(Scanner const& _scanner):
+		m_scanner(_scanner) {}
+	langutil::Scanner const& scanner(std::string const&) const override
 	{
-		return std::make_unique<EwasmTranslationTest>(_config.filename);
+		return m_scanner;
 	}
-
-	explicit EwasmTranslationTest(std::string const& _filename);
-
-	TestResult run(std::ostream& _stream, std::string const& _linePrefix = "", bool const _formatted = false) override;
-
 private:
-	bool parse(std::ostream& _stream, std::string const& _linePrefix, bool const _formatted);
-	std::string interpret();
-
-	std::shared_ptr<Object> m_object;
+	Scanner const& m_scanner;
 };
 
 }

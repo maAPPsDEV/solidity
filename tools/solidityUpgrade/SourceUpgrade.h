@@ -68,29 +68,29 @@ private:
 	class Suite: public UpgradeSuite
 	{
 	public:
-		void analyze(frontend::SourceUnit const& _sourceUnit)
+		void analyze(langutil::ScannerBySourceName const& _scanner, frontend::SourceUnit const& _sourceUnit)
 		{
 			/// Solidity 0.5.0
 			if (isActivated(Module::ConstructorKeyword))
-				ConstructorKeyword{m_changes}.analyze(_sourceUnit);
+				ConstructorKeyword{_scanner, m_changes}.analyze(_sourceUnit);
 			if (isActivated(Module::VisibilitySpecifier))
-				VisibilitySpecifier{m_changes}.analyze(_sourceUnit);
+				VisibilitySpecifier{_scanner, m_changes}.analyze(_sourceUnit);
 
 			/// Solidity 0.6.0
 			if (isActivated(Module::AbstractContract))
-				AbstractContract{m_changes}.analyze(_sourceUnit);
+				AbstractContract{_scanner, m_changes}.analyze(_sourceUnit);
 			if (isActivated(Module::OverridingFunction))
-				OverridingFunction{m_changes}.analyze(_sourceUnit);
+				OverridingFunction{_scanner, m_changes}.analyze(_sourceUnit);
 			if (isActivated(Module::VirtualFunction))
-				VirtualFunction{m_changes}.analyze(_sourceUnit);
+				VirtualFunction{_scanner, m_changes}.analyze(_sourceUnit);
 
 			/// Solidity 0.7.0
 			if (isActivated(Module::DotSyntax))
-				DotSyntax{m_changes}.analyze(_sourceUnit);
+				DotSyntax{_scanner, m_changes}.analyze(_sourceUnit);
 			if (isActivated(Module::NowKeyword))
-				NowKeyword{m_changes}.analyze(_sourceUnit);
+				NowKeyword{_scanner, m_changes}.analyze(_sourceUnit);
 			if (isActivated(Module::ConstrutorVisibility))
-				ConstructorVisibility{m_changes}.analyze(_sourceUnit);
+				ConstructorVisibility{_scanner, m_changes}.analyze(_sourceUnit);
 		}
 
 		void activateModule(Module _module) { m_modules.insert(_module); }

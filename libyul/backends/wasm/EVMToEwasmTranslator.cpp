@@ -41,6 +41,7 @@
 #include <liblangutil/ErrorReporter.h>
 #include <liblangutil/Scanner.h>
 #include <liblangutil/SourceReferenceFormatter.h>
+#include <liblangutil/ScannerBySourceName.h>
 
 #include <libsolidity/interface/OptimiserSettings.h>
 
@@ -105,8 +106,8 @@ Object EVMToEwasmTranslator::run(Object const& _object)
 		message += "----------------------------------\n";
 		message += ret.toString(&WasmDialect::instance());
 		message += "----------------------------------\n";
-		for (auto const& err: errors)
-			message += langutil::SourceReferenceFormatter::formatErrorInformation(*err);
+		//for (auto const& err: errors)
+		// TODO	message += langutil::SourceReferenceFormatter::formatErrorInformation(*err);
 		yulAssert(false, message);
 	}
 
@@ -140,7 +141,10 @@ void EVMToEwasmTranslator::parsePolyfill()
 	{
 		string message;
 		for (auto const& err: errors)
-			message += langutil::SourceReferenceFormatter::formatErrorInformation(*err);
+			message += langutil::SourceReferenceFormatter::formatErrorInformation(
+				*err,
+				ScannerBySourceNameForSingleScanner(*scanner)
+			);
 		yulAssert(false, message);
 	}
 

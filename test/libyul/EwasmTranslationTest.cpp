@@ -91,7 +91,8 @@ bool EwasmTranslationTest::parse(ostream& _stream, string const& _linePrefix, bo
 	else
 	{
 		AnsiColorized(_stream, _formatted, {formatting::BOLD, formatting::RED}) << _linePrefix << "Error parsing source." << endl;
-		printErrors(_stream, stack.errors());
+		SourceReferenceFormatter{_stream, stack, true, false}
+			.printErrorInformation(stack.errors());
 		return false;
 	}
 }
@@ -113,12 +114,4 @@ string EwasmTranslationTest::interpret()
 	stringstream result;
 	state.dumpTraceAndState(result);
 	return result.str();
-}
-
-void EwasmTranslationTest::printErrors(ostream& _stream, ErrorList const& _errors)
-{
-	SourceReferenceFormatter formatter(_stream, true, false);
-
-	for (auto const& error: _errors)
-		formatter.printErrorInformation(*error);
 }

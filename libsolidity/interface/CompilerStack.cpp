@@ -1085,12 +1085,14 @@ size_t CompilerStack::functionEntryPoint(
 
 tuple<int, int, int, int> CompilerStack::positionFromSourceLocation(SourceLocation const& _sourceLocation) const
 {
+	solAssert(_sourceLocation.sourceName, "");
+	Scanner const& s = scanner(*_sourceLocation.sourceName);
 	int startLine;
 	int startColumn;
 	int endLine;
 	int endColumn;
-	tie(startLine, startColumn) = scanner(_sourceLocation.source->name()).translatePositionToLineColumn(_sourceLocation.start);
-	tie(endLine, endColumn) = scanner(_sourceLocation.source->name()).translatePositionToLineColumn(_sourceLocation.end);
+	tie(startLine, startColumn) = s.translatePositionToLineColumn(_sourceLocation.start);
+	tie(endLine, endColumn) = s.translatePositionToLineColumn(_sourceLocation.end);
 
 	return make_tuple(++startLine, ++startColumn, ++endLine, ++endColumn);
 }
