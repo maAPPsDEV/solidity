@@ -57,9 +57,10 @@ CHC::CHC(
 	[[maybe_unused]] map<util::h256, string> const& _smtlib2Responses,
 	[[maybe_unused]] ReadCallback::Callback const& _smtCallback,
 	SMTSolverChoice _enabledSolvers,
-	ModelCheckerSettings const& _settings
+	ModelCheckerSettings const& _settings,
+	ScannerBySourceName const& _scanner
 ):
-	SMTEncoder(_context, _settings),
+	SMTEncoder(_context, _settings, _scanner),
 	m_outerErrorReporter(_errorReporter),
 	m_enabledSolvers(_enabledSolvers)
 {

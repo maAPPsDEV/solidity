@@ -30,6 +30,8 @@
 #include <libsmtutil/SMTPortfolio.h>
 #include <libsmtutil/Helpers.h>
 
+#include <liblangutil/ScannerBySourceName.h>
+
 #include <range/v3/view.hpp>
 
 #include <boost/range/adaptors.hpp>
@@ -45,11 +47,13 @@ using namespace solidity::frontend;
 
 SMTEncoder::SMTEncoder(
 	smt::EncodingContext& _context,
-	ModelCheckerSettings const& _settings
+	ModelCheckerSettings const& _settings,
+	langutil::ScannerBySourceName const& _scanner
 ):
 	m_errorReporter(m_smtErrors),
 	m_context(_context),
-	m_settings(_settings)
+	m_settings(_settings),
+	m_scanner(_scanner)
 {
 }
 
