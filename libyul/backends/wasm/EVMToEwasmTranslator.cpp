@@ -106,8 +106,8 @@ Object EVMToEwasmTranslator::run(Object const& _object)
 		message += "----------------------------------\n";
 		message += ret.toString(&WasmDialect::instance());
 		message += "----------------------------------\n";
-		//for (auto const& err: errors)
-		// TODO	message += langutil::SourceReferenceFormatter::formatErrorInformation(*err);
+		for (auto const& err: errors)
+			message += langutil::SourceReferenceFormatter::formatErrorInformation(*err, m_scanner);
 		yulAssert(false, message);
 	}
 

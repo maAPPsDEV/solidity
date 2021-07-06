@@ -132,7 +132,8 @@ void AssemblyStack::translate(AssemblyStack::Language _targetLanguage)
 	);
 
 	*m_parserResult = EVMToEwasmTranslator(
-		languageToDialect(m_language, m_evmVersion)
+		languageToDialect(m_language, m_evmVersion),
+		*this
 	).run(*parserResult());
 
 	m_language = _targetLanguage;

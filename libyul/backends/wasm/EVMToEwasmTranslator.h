@@ -25,6 +25,10 @@
 #include <libyul/optimiser/ASTWalker.h>
 #include <libyul/Dialect.h>
 
+namespace solidity::langutil
+{
+class ScannerBySourceName;
+}
 namespace solidity::yul
 {
 struct Object;
@@ -32,13 +36,17 @@ struct Object;
 class EVMToEwasmTranslator: public ASTModifier
 {
 public:
-	EVMToEwasmTranslator(Dialect const& _evmDialect): m_dialect(_evmDialect) {}
+	EVMToEwasmTranslator(Dialect const& _evmDialect, langutil::ScannerBySourceName const& _scanner):
+		m_dialect(_evmDialect),
+		m_scanner(_scanner)
+	{}
 	Object run(Object const& _object);
 
 private:
 	void parsePolyfill();
 
 	Dialect const& m_dialect;
+	langutil::ScannerBySourceName const& m_scanner;
 
 	std::shared_ptr<Block> m_polyfill;
 	std::set<YulString> m_polyfillFunctions;
