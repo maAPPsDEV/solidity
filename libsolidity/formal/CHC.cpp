@@ -1742,7 +1742,7 @@ optional<string> CHC::generateCounterexample(CHCSolverInterface::CexGraph const&
 				path.emplace_back("State: " + modelMsg);
 		}
 
-		string txCex = summaryPredicate->formatSummaryCall(summaryArgs);
+		string txCex = summaryPredicate->formatSummaryCall(summaryArgs, m_scanner);
 
 		list<string> calls;
 		auto dfs = [&](unsigned parent, unsigned node, unsigned depth, auto&& _dfs) -> void {
@@ -1754,7 +1754,7 @@ optional<string> CHC::generateCounterexample(CHCSolverInterface::CexGraph const&
 			if (!pred->isConstructorSummary())
 				for (unsigned v: callGraph[node])
 					_dfs(node, v, depth + 1, _dfs);
-			calls.push_front(string(depth * 4, ' ') + pred->formatSummaryCall(nodeArgs(node)));
+			calls.push_front(string(depth * 4, ' ') + pred->formatSummaryCall(nodeArgs(node), m_scanner));
 			if (pred->isInternalCall())
 				calls.front() += " -- internal call";
 			else if (pred->isExternalCallTrusted())
