@@ -138,6 +138,7 @@ private:
 void Scanner::reset(CharStream _source)
 {
 	m_source = make_shared<CharStream>(std::move(_source));
+	m_sourceName = make_shared<string>(m_source->name());
 	reset();
 }
 
