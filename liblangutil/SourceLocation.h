@@ -79,7 +79,7 @@ struct SourceLocation
 		return true;
 	}
 
-	bool isValid() const { return sourceName || start != 1 || end != -1; }
+	bool isValid() const { return sourceName || start != -1 || end != -1; }
 
 	bool hasText() const { return sourceName && 0 <= start && start <= end; }
 
