@@ -123,10 +123,11 @@ void SyntaxTest::filterObtainedErrors()
 		if (auto location = boost::get_error_info<errinfo_sourceLocation>(*currentError))
 		{
 			solAssert(location->sourceName, "");
-			solAssert(m_sources.sources.count(*location->sourceName) == 1, "");
+			sourceName = *location->sourceName;
+			solAssert(m_sources.sources.count(sourceName) == 1, "");
 
 			int preambleSize =
-				static_cast<int>(compiler().scanner(*location->sourceName).size()) -
+				static_cast<int>(compiler().scanner(sourceName).size()) -
 				static_cast<int>(m_sources.sources[sourceName].size());
 			solAssert(preambleSize >= 0, "");
 
