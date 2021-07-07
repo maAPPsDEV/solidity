@@ -658,7 +658,7 @@ pair<vector<smtutil::Expression>, vector<string>> BMC::modelExpressions()
 			if (uf->location().hasText())
 				expressionName = m_scanner.scanner(*uf->location().sourceName).source().substr(
 					static_cast<size_t>(uf->location().start),
-					static_cast<size_t>(uf->location().end)
+					static_cast<size_t>(uf->location().end - uf->location().start)
 				);
 			expressionNames.push_back(move(expressionName));
 		}

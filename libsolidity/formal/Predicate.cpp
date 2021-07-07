@@ -210,7 +210,7 @@ string Predicate::formatSummaryCall(
 		if (funCall->location().hasText())
 			return _scanner.scanner(*funCall->location().sourceName).source().substr(
 				static_cast<size_t>(funCall->location().start),
-				static_cast<size_t>(funCall->location().end)
+				static_cast<size_t>(funCall->location().end - funCall->location().start)
 			);
 		else
 			return {};
